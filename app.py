@@ -9,10 +9,7 @@ st.set_page_config(page_title="AI Placement Intelligence", layout="centered")
 
 st.markdown("""
 <style>
-.stApp {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: white;
-}
+
 
 h1, h2, h3 {
     color: white;
@@ -181,9 +178,3 @@ if analyze_clicked:
 
 st.divider()
 
-st.markdown("""
-<center>
-💡 Built with ❤️ using Streamlit + Ollama (Local LLM)<br>
-🏆 Hackathon 2026 Project
-</center>
-""", unsafe_allow_html=True)
