@@ -8,7 +8,39 @@ st.set_page_config(page_title="AI Placement Intelligence System", page_icon="�
 # ----------
 # -------------------- LOGIN SYSTEM --------------------
 
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
+
+if not st.session_state.logged_in:
+    st.title("🔐 Secure Login")
+
+    email = st.text_input("Email Address")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Login"):
+
+        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        email_valid = re.match(email_pattern, email)
+
+        if not email_valid:
+            st.error("❌ Please enter a valid email address.")
+
+        elif len(password) < 8:
+            st.error("❌ Password must be at least 8 characters.")
+
+        elif not any(char.isdigit() for char in password):
+            st.error("❌ Password must contain at least one number.")
+
+        else:
+            st.session_state.logged_in = True
+            st.session_state.user_email = email
+            st.success("Login successful!")
+            st.rerun()
+
+    st.stop()
 
 # ---------------- SIDEBAR ---------------- #
 
