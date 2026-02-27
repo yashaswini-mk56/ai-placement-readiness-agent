@@ -43,7 +43,7 @@ st.markdown("""
 }
 /* Subtitle */
 .login-subtitle {
-    color: #94a3b8;   /* subtle gray-blue */
+    color: #f8fafc;  /* soft white */
     font-size: 16px;
     text-align: center;
     margin-bottom: 35px;
