@@ -24,25 +24,29 @@ st.markdown("""
 
 /* Login Card */
 .login-card {
-    background-color: #1e293b;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.4);
+    background: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(12px);
+    padding: 50px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
 }
 
 /* Title */
 .login-title {
-    color: #ffffff;
+    color: #f8fafc;  /* soft white */
+    font-size: 36px;
+    font-weight: 800;
     text-align: center;
-    font-size: 30px;
-    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
 }
-
 /* Subtitle */
 .login-subtitle {
+    color: #94a3b8;   /* subtle gray-blue */
+    font-size: 16px;
     text-align: center;
-    color: #cbd5e1;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 /* Input field background + text color */
