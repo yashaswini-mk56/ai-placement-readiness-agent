@@ -1,33 +1,29 @@
-import os
-from openai import OpenAI
-from dotenv import load_dotenv
-
-load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+import requests
 
 def analyze_resume(resume_text, company_type):
 
     prompt = f"""
-    You are an expert AI Placement Mentor.
+    You are an expert Placement AI.
 
-    Analyze this resume:
+    Analyze this resume for {company_type} company:
 
     {resume_text}
 
-    Target Company Type: {company_type}
-
-    Give structured output:
-
-    Placement Readiness Score (out of 10):
-    Missing Skills:
-    Interview Questions (5):
-    30-Day Roadmap (Week 1–4):
+    Provide:
+    - Placement Readiness Score (out of 10)
+    - Strengths
+    - Missing Skills
+    - 5 Interview Questions
+    - 30-Day Roadmap
     """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "gemma:7b",
+            "prompt": prompt,
+            "stream": False
+        }
     )
 
-    return response.choices[0].message.content
+    return response.json()["response"]
