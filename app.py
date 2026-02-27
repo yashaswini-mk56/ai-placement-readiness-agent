@@ -16,31 +16,50 @@ st.markdown("""
     background: linear-gradient(135deg, #0f172a, #1e293b);
 }
 
+/* Center content properly */
+.block-container {
+    padding-top: 4rem;
+    max-width: 600px;
+}
+
+/* Login Card */
 .login-card {
     background-color: #1e293b;
     padding: 40px;
     border-radius: 20px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 35px rgba(0,0,0,0.4);
 }
 
+/* Title */
 .login-title {
-    color: #6366f1;
+    color: #ffffff;
     text-align: center;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 30px;
+    font-weight: 700;
 }
 
+/* Subtitle */
 .login-subtitle {
     text-align: center;
-    color: #94a3b8;
+    color: #cbd5e1;
     margin-bottom: 30px;
 }
 
+/* Input field background + text color */
 .stTextInput>div>div>input {
+    background-color: #334155 !important;
+    color: #ffffff !important;
     border-radius: 10px;
     padding: 10px;
+    border: 1px solid #475569;
 }
 
+/* Placeholder text color */
+.stTextInput input::placeholder {
+    color: #94a3b8 !important;
+}
+
+/* Button styling */
 .stButton>button {
     background-color: #6366f1;
     color: white;
@@ -48,11 +67,15 @@ st.markdown("""
     height: 3em;
     width: 100%;
     font-size: 16px;
+    font-weight: 600;
 }
 
 .stButton>button:hover {
     background-color: #4f46e5;
 }
+
+/* Remove footer */
+footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
