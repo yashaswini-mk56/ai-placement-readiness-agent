@@ -5,8 +5,56 @@ import re
 
 st.set_page_config(page_title="AI Placement Intelligence System", page_icon="🚀", layout="centered")
 
-# ----------
-# -------------------- LOGIN SYSTEM --------------------
+# --------------
+
+# ---------------- PREMIUM UI LOGIN SYSTEM ---------------- #
+
+# Global Styling (Before Login)
+st.markdown("""
+<style>
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.login-card {
+    background-color: #1e293b;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+.login-title {
+    color: #6366f1;
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #94a3b8;
+    margin-bottom: 30px;
+}
+
+.stTextInput>div>div>input {
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.stButton>button {
+    background-color: #6366f1;
+    color: white;
+    border-radius: 12px;
+    height: 3em;
+    width: 100%;
+    font-size: 16px;
+}
+
+.stButton>button:hover {
+    background-color: #4f46e5;
+}
+</style>
+""", unsafe_allow_html=True)
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -15,30 +63,39 @@ if "user_email" not in st.session_state:
     st.session_state.user_email = None
 
 if not st.session_state.logged_in:
-    st.title("🔐 Secure Login")
 
-    email = st.text_input("Email Address")
-    password = st.text_input("Password", type="password")
+    col1, col2, col3 = st.columns([1,2,1])
 
-    if st.button("Login"):
+    with col2:
+        st.markdown('<div class="login-card">', unsafe_allow_html=True)
 
-        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        email_valid = re.match(email_pattern, email)
+        st.markdown('<div class="login-title">🚀 AI Placement Intelligence</div>', unsafe_allow_html=True)
+        st.markdown('<div class="login-subtitle">Smart Resume Evaluation Platform</div>', unsafe_allow_html=True)
 
-        if not email_valid:
-            st.error("❌ Please enter a valid email address.")
+        email = st.text_input("📧 Email Address")
+        password = st.text_input("🔑 Password", type="password")
 
-        elif len(password) < 8:
-            st.error("❌ Password must be at least 8 characters.")
+        if st.button("Login"):
 
-        elif not any(char.isdigit() for char in password):
-            st.error("❌ Password must contain at least one number.")
+            email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+            email_valid = re.match(email_pattern, email)
 
-        else:
-            st.session_state.logged_in = True
-            st.session_state.user_email = email
-            st.success("Login successful!")
-            st.rerun()
+            if not email_valid:
+                st.error("❌ Please enter a valid email address.")
+
+            elif len(password) < 8:
+                st.error("❌ Password must be at least 8 characters.")
+
+            elif not any(char.isdigit() for char in password):
+                st.error("❌ Password must contain at least one number.")
+
+            else:
+                st.session_state.logged_in = True
+                st.session_state.user_email = email
+                st.success("Login successful!")
+                st.rerun()
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
     st.stop()
 
