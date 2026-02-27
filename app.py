@@ -1,127 +1,189 @@
 import streamlit as st
+import re
 from llm_engine import analyze_resume
 from PyPDF2 import PdfReader
-import re
 
-st.set_page_config(page_title="AI Placement Intelligence System", page_icon="🚀", layout="centered")
+st.set_page_config(page_title="AI Placement Intelligence", layout="centered")
 
-# ---------------- LOGIN SYSTEM ---------------- #
+# -------------------- STYLING --------------------
+
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+}
+
+h1, h2, h3 {
+    color: white;
+}
+
+.stButton>button {
+    background-color: #00c6ff;
+    color: black;
+    border-radius: 8px;
+    height: 3em;
+    font-weight: bold;
+}
+
+.stButton>button:hover {
+    background-color: #0072ff;
+    color: white;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------- LOGIN SYSTEM --------------------
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-if not st.session_state.logged_in:
-    st.title("🔐 Login to AI Placement Intelligence System")
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
 
-    username = st.text_input("Username")
+if not st.session_state.logged_in:
+    st.title("🔐 Secure Login")
+
+    email = st.text_input("Email Address")
     password = st.text_input("Password", type="password")
 
     if st.button("Login"):
-        if username == "admin" and password == "1234":
-            st.session_state.logged_in = True
-            st.rerun()
+
+        email_pattern = r"^[\w\.-]+@[\w\.-]+\.\w+$"
+        email_valid = re.match(email_pattern, email)
+
+        if not email_valid:
+            st.error("❌ Please enter a valid email address.")
+
+        elif len(password) < 8:
+            st.error("❌ Password must be at least 8 characters.")
+
+        elif not any(char.isdigit() for char in password):
+            st.error("❌ Password must contain at least one number.")
+
         else:
-            st.error("Invalid credentials")
+            st.session_state.logged_in = True
+            st.session_state.user_email = email
+            st.success("Login successful!")
+            st.rerun()
 
     st.stop()
 
-# ---------------- SIDEBAR ---------------- #
+# -------------------- MAIN APP --------------------
 
-st.sidebar.title("📌 Navigation")
-page = st.sidebar.radio("Go to", ["Resume Analyzer", "About System"])
+st.sidebar.success(f"Logged in as: {st.session_state.user_email}")
 
-# ---------------- ABOUT PAGE ---------------- #
+if st.sidebar.button("Logout"):
+    st.session_state.logged_in = False
+    st.session_state.user_email = None
+    st.rerun()
 
-if page == "About System":
-    st.title("📘 About AI Placement Intelligence System")
-    st.write("""
-    This system evaluates placement readiness using a Local LLM (Ollama).
-    
-    Features:
-    - Resume analysis
-    - Skill gap detection
-    - Placement readiness scoring
-    - Interview question generation
-    - 30-day improvement roadmap
-    
-    Designed for students preparing for placements.
-    """)
-    st.stop()
+st.markdown("""
+# 🚀 AI Placement Intelligence System
+### 🎓 Smart Career Assistant Powered by Local LLM
+""")
 
-# ---------------- MAIN ANALYZER PAGE ---------------- #
+st.divider()
 
-st.title("🚀 AI Placement Readiness Intelligence System")
-st.write("Upload your resume or paste text to evaluate placement readiness using AI.")
+# -------------------- RESUME INPUT --------------------
 
-st.markdown("### 🤖 AI Engine Status")
-st.info("Using Local LLM (Ollama)")
+st.subheader("📄 Resume Input")
+
+uploaded_file = st.file_uploader("Upload Resume (PDF)", type=["pdf"])
 
 resume_text = ""
 
-# Upload PDF
-uploaded_file = st.file_uploader("📄 Upload Resume (PDF)", type=["pdf"])
-
-if uploaded_file is not None:
-    reader = PdfReader(uploaded_file)
-    for page in reader.pages:
+if uploaded_file:
+    pdf_reader = PdfReader(uploaded_file)
+    for page in pdf_reader.pages:
         resume_text += page.extract_text()
 
-# Manual Paste
-st.markdown("### OR")
-manual_text = st.text_area("✍ Paste Resume Text Here")
+else:
+    resume_text = st.text_area("Or Paste Resume Text")
 
-if manual_text:
-    resume_text = manual_text
-
-# Resume Preview
-if resume_text:
-    st.markdown("### 📄 Resume Preview")
-    st.text(resume_text[:500] + "...")
-
-# Company Type
 company_type = st.selectbox(
-    "🏢 Select Target Company Type",
-    [
-        "Product-based (High DSA focus)",
-        "Service-based (Core fundamentals focus)",
-        "Startup (Full-stack + adaptability focus)"
-    ]
+    "🎯 Select Target Company Type",
+    ["Product-based", "Service-based", "Startup"]
 )
 
-# Analyze Button
-if st.button("🔍 Analyze Resume"):
+col1, col2, col3 = st.columns([1,2,1])
 
+with col2:
+    analyze_clicked = st.button("🚀 Analyze Resume", use_container_width=True)
+
+# -------------------- ANALYSIS --------------------
+
+if analyze_clicked:
     if resume_text:
 
-        with st.spinner("AI is analyzing your resume... Please wait."):
+        with st.spinner("🤖 AI is analyzing your resume..."):
             result = analyze_resume(resume_text, company_type)
 
-        st.success("Analysis Complete!")
+        sections = result.split("\n\n")
 
-        # ---------------- SCORE EXTRACTION ---------------- #
+        score = ""
+        strengths = ""
+        weaknesses = ""
+        missing = ""
+        questions = ""
+        roadmap = ""
 
-        score_match = re.search(r"(\d+)/10", result)
-        if score_match:
-            score = int(score_match.group(1))
-            st.metric("🏆 Placement Readiness Score", f"{score}/10")
-            st.progress(score / 10)
+        for section in sections:
+            if "SCORE" in section:
+                score = section
+            elif "STRENGTHS" in section:
+                strengths = section
+            elif "WEAKNESSES" in section:
+                weaknesses = section
+            elif "MISSING_SKILLS" in section:
+                missing = section
+            elif "INTERVIEW_QUESTIONS" in section:
+                questions = section
+            elif "ROADMAP" in section:
+                roadmap = section
 
         st.divider()
 
-        # Detailed Result
-        with st.expander("📊 View Detailed AI Analysis", expanded=True):
-            st.markdown(result)
+        # Score Display
+        st.subheader("📊 Placement Readiness Score")
 
-        # Download Button
-        st.download_button(
-            label="📥 Download Report",
-            data=result,
-            file_name="placement_analysis.txt",
-            mime="text/plain"
-        )
+        match = re.search(r"\d+", score)
+        if match:
+            numeric_score = int(match.group())
+            st.metric("Score", f"{numeric_score}/10")
+            st.progress(numeric_score / 10)
+        else:
+            st.info(score)
+
+        # Strengths
+        st.subheader("💪 Strengths")
+        st.success(strengths)
+
+        # Weaknesses
+        st.subheader("⚠ Weaknesses")
+        st.warning(weaknesses)
+
+        # Missing Skills
+        st.subheader("🧠 Missing Skills")
+        st.error(missing)
+
+        # Interview Questions
+        st.subheader("❓ Interview Questions")
+        st.write(questions)
+
+        # Roadmap
+        st.subheader("🗺 30-Day Roadmap")
+        st.write(roadmap)
 
     else:
-        st.warning("Please upload or paste resume before analyzing.")
+        st.warning("Please upload or paste resume.")
 
 st.divider()
-st.caption("Built using Local LLM (Ollama) + Streamlit | Hackathon Project 2026")
+
+st.markdown("""
+<center>
+💡 Built with ❤️ using Streamlit + Ollama (Local LLM)<br>
+🏆 Hackathon 2026 Project
+</center>
+""", unsafe_allow_html=True)
